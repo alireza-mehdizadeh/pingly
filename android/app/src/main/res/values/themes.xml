@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Pingly" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/pingly_cream</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="Theme.Pingly.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/pingly_cream</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.Pingly</item>
+    </style>
+
+    <!-- Shown over the lock screen for full-screen photos, love notes and questions. -->
+    <style name="Theme.Pingly.Fullscreen" parent="Theme.Pingly">
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
+</resources>

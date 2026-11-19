@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">پینگلی</string>
+
+    <!-- Notification channels -->
+    <string name="channel_service">سرویس پینگلی</string>
+    <string name="channel_service_desc">اعلان همیشگی که نشون می‌ده پینگلی آماده‌ی دریافت پینگ‌هاست.</string>
+    <string name="channel_pings">پینگ‌های پارتنر</string>
+    <string name="channel_pings_desc">لرزش، صدا و پینگ‌هایی که پارتنرت برات می‌فرسته.</string>
+    <string name="channel_fullscreen">نمایش تمام‌صفحه</string>
+    <string name="channel_fullscreen_desc">عکس‌ها، پیام‌های عاشقانه و سؤال‌هایی که روی صفحه باز می‌شن.</string>
+    <string name="channel_updates">دعوت‌ها و پاسخ‌ها</string>
+    <string name="channel_updates_desc">دعوت به اتصال، جواب سؤال‌ها و تغییرات اتصال.</string>
+    <string name="channel_health">وضعیت پینگلی</string>
+    <string name="channel_health_desc">اگه پینگلی نتونه تو پس‌زمینه کار کنه، اینجا خبرت می‌کنیم.</string>
+
+    <!-- Persistent service notification -->
+    <string name="service_title_ready">پینگلی روشنه 💗</string>
+    <string name="service_text_partner">آماده‌ی دریافت پینگ از %1$s</string>
+    <string name="service_text_waiting">منتظر اتصال به پارتنرت</string>
+    <string name="service_text_connecting">در حال اتصال…</string>
+    <string name="service_text_offline">اینترنت قطعه؛ به‌محض وصل‌شدن دوباره آماده‌ایم</string>
+
+    <!-- Health notifications -->
+    <string name="health_cannot_start_title">پینگلی خاموش مونده</string>
+    <string name="health_cannot_start_text">اندروید اجازه نداد پینگلی خودش روشن بشه. برای فعال‌کردن دوباره بزن.</string>
+    <string name="health_logged_out_title">از حساب پینگلی خارج شدی</string>
+    <string name="health_logged_out_text">با این شماره روی گوشی دیگه‌ای وارد شدی. برای ورود دوباره بزن.</string>
+</resources>
