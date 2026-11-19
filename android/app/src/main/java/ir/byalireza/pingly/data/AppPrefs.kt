@@ -31,6 +31,11 @@ class AppPrefs(context: Context) {
         get() = prefs.getBoolean("setup_done", false)
         set(value) = prefs.edit().putBoolean("setup_done", value).apply()
 
+    /** The user opened their phone's OEM autostart screen (we can't read that setting back). */
+    var autostartConfirmed: Boolean
+        get() = prefs.getBoolean("autostart_confirmed", false)
+        set(value) = prefs.edit().putBoolean("autostart_confirmed", value).apply()
+
     var serverUrl: String
         get() = prefs.getString("server_url", null)?.takeIf { it.isNotBlank() } ?: BuildConfig.DEFAULT_SERVER_URL
         set(value) = prefs.edit().putString("server_url", value.trim().trimEnd('/')).apply()
