@@ -91,7 +91,7 @@ class PinglyService : Service() {
     }
 
     private fun refreshNotification() {
-        if (!Notifications.canPost(this)) return
+        if (!running || !Notifications.canPost(this)) return
         runCatching {
             NotificationManagerCompat.from(this).notify(Notifications.ID_SERVICE, Notifications.service(this, currentText()))
         }
@@ -124,7 +124,11 @@ class PinglyService : Service() {
             // Killed by the system rather than paused by the user: come back as soon as allowed.
             ServiceController.scheduleRestart(this, delayMs = 3_000)
         } else {
+            // Paused or signed out: disconnect and take the "Pingly is on" notification down too
+            // (status refreshes re-post it with notify(), which outlives the service otherwise).
             container.realtime.stop()
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            Notifications.cancel(this, Notifications.ID_SERVICE)
         }
         super.onDestroy()
     }
