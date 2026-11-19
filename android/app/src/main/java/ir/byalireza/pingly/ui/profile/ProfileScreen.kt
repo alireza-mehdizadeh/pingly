@@ -7,42 +7,48 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ir.byalireza.pingly.domain.Avatar
 import ir.byalireza.pingly.ui.BaseViewModel
-import ir.byalireza.pingly.ui.components.AvatarBubble
-import ir.byalireza.pingly.ui.components.PinglyBackground
+import ir.byalireza.pingly.ui.components.Avatar
+import ir.byalireza.pingly.ui.components.FieldLabel
+import ir.byalireza.pingly.ui.components.IconBadge
+import ir.byalireza.pingly.ui.components.LocalToaster
+import ir.byalireza.pingly.ui.components.PinglyCard
+import ir.byalireza.pingly.ui.components.PinglyScreen
 import ir.byalireza.pingly.ui.components.PinglyTextField
 import ir.byalireza.pingly.ui.components.PrimaryButton
-import ir.byalireza.pingly.ui.components.TopBar
 import ir.byalireza.pingly.ui.components.bouncyClick
 import ir.byalireza.pingly.ui.theme.PinglyColors
 
@@ -55,73 +61,80 @@ class ProfileViewModel(app: Application) : BaseViewModel(app) {
     }
 }
 
-/** Name + avatar. Used once after sign-up and later from settings. */
+/** Name + profile colour. Used once after sign-up and later from settings. */
 @Composable
 fun ProfileScreen(firstTime: Boolean, onDone: () -> Unit, onBack: (() -> Unit)? = null, vm: ProfileViewModel = viewModel()) {
     val couple by vm.couple.collectAsState()
     val busy by vm.busy.collectAsState()
+    val toaster = LocalToaster.current
     var name by rememberSaveable { mutableStateOf(couple.me?.displayName.orEmpty()) }
     var avatar by rememberSaveable { mutableStateOf(couple.me?.avatar ?: Avatar.Bunny.id) }
+    LaunchedEffect(vm) { vm.toasts.collect(toaster::show) }
 
-    PinglyBackground {
-        Column(Modifier.fillMaxSize().imePadding().navigationBarsPadding()) {
-            if (!firstTime) TopBar("پروفایل من", onBack = onBack) else Spacer(Modifier.statusBarsPadding())
-            Column(
-                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Spacer(Modifier.height(if (firstTime) 32.dp else 8.dp))
-                AvatarBubble(avatar, size = 110.dp, ring = PinglyColors.PinkSoft)
-                Spacer(Modifier.height(16.dp))
-                if (firstTime) {
-                    Text("خوش اومدی! 🎉", style = MaterialTheme.typography.headlineMedium, color = PinglyColors.Ink)
-                    Text(
-                        "اسمت و یه آواتار بامزه انتخاب کن؛ پارتنرت تو رو این‌طوری می‌بینه.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = PinglyColors.InkSoft,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(20.dp))
-                }
-                PinglyTextField(name, { name = it }, label = "اسمت چیه؟", placeholder = "مثلاً: زینب", maxLength = 32)
-                Spacer(Modifier.height(20.dp))
-                Text("آواتارت", style = MaterialTheme.typography.titleMedium, color = PinglyColors.Ink, modifier = Modifier.fillMaxWidth())
-                Spacer(Modifier.height(10.dp))
-                AvatarGrid(selected = avatar, onSelect = { avatar = it })
-                Spacer(Modifier.height(24.dp))
-            }
+    PinglyScreen(
+        title = if (firstTime) null else "ویرایش پروفایل",
+        onBack = onBack,
+        background = if (firstTime) PinglyColors.Surface else PinglyColors.Background,
+        bottom = {
             PrimaryButton(
-                if (firstTime) "ادامه 💞" else "ذخیره",
+                if (firstTime) "ادامه" else "ذخیره‌ی تغییرات",
                 onClick = { vm.save(name, avatar, onDone) },
+                icon = if (firstTime) Icons.AutoMirrored.Rounded.ArrowForward else Icons.Rounded.Check,
                 loading = busy,
                 enabled = name.isNotBlank(),
-                modifier = Modifier.padding(24.dp),
+            )
+        },
+    ) {
+        if (firstTime) {
+            Spacer(Modifier.height(32.dp))
+            Text("خوش اومدی!", style = MaterialTheme.typography.headlineLarge, color = PinglyColors.Ink)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "اسمت و یه رنگ برای پروفایلت انتخاب کن؛ پارتنرت تو رو این‌طوری می‌بینه.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = PinglyColors.InkSoft,
             )
         }
-    }
-}
-
-@Composable
-private fun AvatarGrid(selected: String, onSelect: (String) -> Unit) {
-    val rows = Avatar.entries.chunked(4)
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        rows.forEach { row ->
-            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { a ->
-                    val isSelected = a.id == selected
-                    val scale by animateFloatAsState(if (isSelected) 1.08f else 1f, label = "sel")
-                    Box(
-                        Modifier
-                            .weight(1f)
-                            .aspectRatio(1f)
-                            .scale(scale)
-                            .clip(CircleShape)
-                            .background(a.background)
-                            .then(if (isSelected) Modifier.border(3.dp, PinglyColors.Pink, CircleShape) else Modifier)
-                            .bouncyClick { onSelect(a.id) },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(a.emoji, fontSize = 30.sp)
+        Spacer(Modifier.height(28.dp))
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Avatar(name.ifBlank { null }, avatar, size = 112.dp, ring = Color.White)
+            Spacer(Modifier.height(10.dp))
+            Text(
+                name.ifBlank { "اسمت اینجا نشون داده می‌شه" },
+                style = MaterialTheme.typography.titleLarge,
+                color = if (name.isBlank()) PinglyColors.InkFaint else PinglyColors.Ink,
+                textAlign = TextAlign.Center,
+            )
+        }
+        Spacer(Modifier.height(28.dp))
+        PinglyTextField(name, { name = it }, placeholder = "مثلاً زینب", label = "اسمت", icon = Icons.Rounded.Person, maxLength = 32)
+        Spacer(Modifier.height(24.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconBadge(Icons.Rounded.Palette, PinglyColors.Lilac, PinglyColors.LilacTint, size = 30.dp)
+            FieldLabel("رنگ پروفایل", Modifier.padding(start = 6.dp, top = 8.dp))
+        }
+        Spacer(Modifier.height(8.dp))
+        PinglyCard(padding = 16.dp) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Avatar.entries.chunked(6).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        row.forEach { option ->
+                            val selected = option.id == avatar
+                            val scale by animateFloatAsState(if (selected) 1.1f else 1f, label = "sel")
+                            Box(
+                                Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .scale(scale)
+                                    .clip(CircleShape)
+                                    .background(Brush.linearGradient(option.colors))
+                                    .then(if (selected) Modifier.border(3.dp, Color.White, CircleShape) else Modifier)
+                                    .bouncyClick { avatar = option.id },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                if (selected) Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                            }
+                        }
                     }
                 }
             }
