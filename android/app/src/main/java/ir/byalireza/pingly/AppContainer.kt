@@ -89,7 +89,7 @@ class AppContainer(private val context: Context) {
                     events.clear()
                     media.clear()
                     if (state.isPaired && !wasPaired) {
-                        Notifications.update(context, "اتصال برقرار شد 💞", "حالا تو و ${state.partnerName} به هم وصلید.", TAG_PAIR)
+                        Notifications.update(context, "اتصال برقرار شد", "حالا تو و ${state.partnerName} به هم وصلید.", TAG_PAIR)
                     } else if (!state.isPaired && wasPaired) {
                         Notifications.update(context, "اتصال قطع شد", "اتصال پینگلی بین شما قطع شد.", TAG_PAIR)
                     }
@@ -97,7 +97,7 @@ class AppContainer(private val context: Context) {
                 }
                 state.invites.incoming.firstOrNull { it.id !in before }?.let { invite ->
                     val name = invite.from.displayName.ifBlank { invite.from.phone }
-                    Notifications.update(context, "یه دعوت عاشقانه داری 💌", "$name می‌خواد تو پینگلی به تو وصل بشه.", TAG_INVITE)
+                    Notifications.update(context, "یه دعوت تازه داری", "$name می‌خواد تو پینگلی به تو وصل بشه.", TAG_INVITE)
                 }
                 if (message.reason == "partner") runCatching { media.refresh(MediaKind.Voice) }
             }

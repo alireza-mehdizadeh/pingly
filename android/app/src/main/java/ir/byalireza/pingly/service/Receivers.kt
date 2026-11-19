@@ -66,7 +66,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 container.events.send(EventType.Ping)
                 Notifications.cancel(context, notificationId)
             } catch (e: Exception) {
-                Notifications.update(context, "پینگ فرستاده نشد 😔", e.toPersianMessage(), notificationId)
+                Notifications.update(context, "پینگ فرستاده نشد", e.toPersianMessage(), notificationId)
             } finally {
                 pending.finish()
             }

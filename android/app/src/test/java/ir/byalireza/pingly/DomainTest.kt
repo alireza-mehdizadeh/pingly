@@ -33,7 +33,7 @@ class DomainTest {
 
     @Test
     fun errorCodesBecomeFriendlyPersian() {
-        assertEquals("یه کم صبر کن؛ ۴۵ ثانیه دیگه دوباره امتحان کن ⏳", ApiException(429, "rate_limited", retryAfter = 45).persianMessage)
+        assertEquals("یه کم صبر کن؛ ۴۵ ثانیه دیگه دوباره امتحان کن", ApiException(429, "rate_limited", retryAfter = 45).persianMessage)
         assertEquals("کد اشتباهه. ۲ بار دیگه می‌تونی امتحان کنی.", ApiException(400, "wrong_code", attemptsLeft = 2).persianMessage)
         assertTrue(ApiException(500, "something_new").persianMessage.isNotBlank())
     }
@@ -46,10 +46,10 @@ class DomainTest {
             payload = payload?.let { p -> JsonObject(p.mapValues { JsonPrimitive(it.value) }) },
             locked = false, replyTo = null,
         )
-        assertEquals("زینب یه پینگ فرستاد 💗", event(EventType.Ping, mine = false).summary("زینب"))
-        assertEquals("لرزش «بغل محکم» فرستادی 🤗", event(EventType.Vibrate, mine = true, mapOf("pattern" to "hug")).summary("زینب"))
-        assertEquals("یه پینگ فرستادی 💗", event(EventType.Ping, mine = true).summary("زینب"))
-        assertEquals("💌 «سلام»", event(EventType.Message, mine = false, payload = mapOf("text" to "سلام")).summary("زینب"))
+        assertEquals("زینب یه پینگ فرستاد", event(EventType.Ping, mine = false).summary("زینب"))
+        assertEquals("لرزش «بغل محکم» فرستادی", event(EventType.Vibrate, mine = true, mapOf("pattern" to "hug")).summary("زینب"))
+        assertEquals("یه پینگ فرستادی", event(EventType.Ping, mine = true).summary("زینب"))
+        assertEquals("«سلام»", event(EventType.Message, mine = false, payload = mapOf("text" to "سلام")).summary("زینب"))
         assertEquals(EventStatus.Answered, EventStatus.fromWire("answered"))
         assertEquals(EventType.Question, EventType.fromWire("question"))
     }

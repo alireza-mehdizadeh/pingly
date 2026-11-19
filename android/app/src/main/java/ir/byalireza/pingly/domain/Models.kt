@@ -21,13 +21,13 @@ data class CoupleState(
     val partnerName: String get() = partner?.displayName?.ifBlank { null } ?: "پارتنرت"
 }
 
-enum class EventStatus(val wire: String, val label: String, val icon: String) {
-    Sending("sending", "در حال ارسال", "🕊️"),
-    Sent("sent", "فرستاده شد", "✓"),
-    Delivered("delivered", "رسید", "✓✓"),
-    Opened("opened", "دید", "👀"),
-    Answered("answered", "جواب داد", "💬"),
-    Expired("expired", "نرسید (گوشیش خاموش بود)", "⌛");
+enum class EventStatus(val wire: String, val label: String) {
+    Sending("sending", "در حال ارسال"),
+    Sent("sent", "ارسال شد"),
+    Delivered("delivered", "رسید"),
+    Opened("opened", "دیده شد"),
+    Answered("answered", "جواب داد"),
+    Expired("expired", "نرسید");
 
     companion object {
         fun fromWire(value: String): EventStatus = entries.firstOrNull { it.wire == value } ?: Sent
@@ -67,14 +67,14 @@ data class PinglyEvent(
         val pattern = VibrationPattern.fromId(metaString("pattern"))
         val sound = PinglySound.fromId(metaString("sound"))
         return when (type) {
-            EventType.Ping -> said("یه پینگ فرستادی 💗", "یه پینگ فرستاد 💗")
-            EventType.Vibrate -> said("لرزش «${pattern.title}» فرستادی ${pattern.emoji}", "لرزش «${pattern.title}» فرستاد ${pattern.emoji}")
-            EventType.Sound -> said("صدای «${sound.title}» رو پخش کردی ${sound.emoji}", "صدای «${sound.title}» رو پخش کرد ${sound.emoji}")
-            EventType.Voice -> said("یه صدای ضبط‌شده پخش کردی 🎙️", "یه صدای ضبط‌شده پخش کرد 🎙️")
-            EventType.Image -> said("یه عکس تمام‌صفحه نشون دادی 🖼️", "یه عکس تمام‌صفحه فرستاد 🖼️")
-            EventType.Message -> if (locked) said("یه پیام عاشقانه فرستادی 💌", "یه پیام عاشقانه فرستاد 💌") else "💌 «${text.orEmpty()}»"
-            EventType.Question -> if (locked) said("یه سؤال پرسیدی ❓", "یه سؤال پرسید ❓") else "❓ ${question.orEmpty()}"
-            EventType.Answer -> if (locked) said("جواب دادی 💬", "جواب داد 💬") else "💬 «${answer.orEmpty()}»"
+            EventType.Ping -> said("یه پینگ فرستادی", "یه پینگ فرستاد")
+            EventType.Vibrate -> said("لرزش «${pattern.title}» فرستادی", "لرزش «${pattern.title}» فرستاد")
+            EventType.Sound -> said("صدای «${sound.title}» رو پخش کردی", "صدای «${sound.title}» رو پخش کرد")
+            EventType.Voice -> said("یه صدای ضبط‌شده پخش کردی", "یه صدای ضبط‌شده پخش کرد")
+            EventType.Image -> said("یه عکس تمام‌صفحه نشون دادی", "یه عکس تمام‌صفحه فرستاد")
+            EventType.Message -> if (locked) said("یه پیام عاشقانه فرستادی", "یه پیام عاشقانه فرستاد") else "«${text.orEmpty()}»"
+            EventType.Question -> if (locked) said("یه سؤال پرسیدی", "یه سؤال پرسید") else question.orEmpty()
+            EventType.Answer -> if (locked) said("جواب دادی", "جواب داد") else "«${answer.orEmpty()}»"
         }
     }
 }

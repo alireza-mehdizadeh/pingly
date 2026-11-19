@@ -15,7 +15,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import ir.byalireza.pingly.MainActivity
 import ir.byalireza.pingly.R
-import ir.byalireza.pingly.domain.Avatar
 import ir.byalireza.pingly.domain.EventType
 import ir.byalireza.pingly.domain.PinglyEvent
 import ir.byalireza.pingly.ui.fullscreen.FullscreenActivity
@@ -94,7 +93,6 @@ object Notifications {
     @SuppressLint("MissingPermission") // checked by canPost()
     fun partnerEvent(context: Context, event: PinglyEvent, partnerName: String, partnerAvatar: String?, fullScreen: Boolean) {
         if (!canPost(context)) return
-        val avatar = Avatar.fromId(partnerAvatar).emoji
         val opensFullscreen = event.type == EventType.Image || event.type == EventType.Message || event.type == EventType.Question
         val id = notificationIdFor(event.id)
         val contentIntent = if (opensFullscreen) FullscreenActivity.pendingIntent(context, event.id) else openAppIntent(context, id)
@@ -103,7 +101,7 @@ object Notifications {
         val builder = NotificationCompat.Builder(context, if (fullScreen) CHANNEL_FULLSCREEN else CHANNEL_PINGS)
             .setSmallIcon(R.drawable.ic_stat_pingly)
             .setColor(brandColor)
-            .setContentTitle("$avatar $partnerName")
+            .setContentTitle(partnerName)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -116,10 +114,10 @@ object Notifications {
 
         if (fullScreen) builder.setFullScreenIntent(FullscreenActivity.pendingIntent(context, event.id), true)
         if (event.type == EventType.Ping) {
-            builder.addAction(0, "💗 پینگ برگردون", NotificationActionReceiver.pingBackIntent(context, id))
+            builder.addAction(0, "پینگ برگردون", NotificationActionReceiver.pingBackIntent(context, id))
         }
         if (event.type == EventType.Question) {
-            builder.addAction(0, "✍️ جواب بده", FullscreenActivity.pendingIntent(context, event.id))
+            builder.addAction(0, "جواب بده", FullscreenActivity.pendingIntent(context, event.id))
         }
         NotificationManagerCompat.from(context).notify(id, builder.build())
     }

@@ -16,7 +16,6 @@ import ir.byalireza.pingly.service.PinglyService
 /** One line of the "keep Pingly awake" checklist. */
 data class HealthItem(
     val key: Key,
-    val emoji: String,
     val title: String,
     val description: String,
     val ok: Boolean,
@@ -53,14 +52,14 @@ object BackgroundHealth {
     fun items(context: Context, serviceShouldRun: Boolean, autostartConfirmed: Boolean): List<HealthItem> = buildList {
         add(
             HealthItem(
-                HealthItem.Key.Notifications, "🔔", "اجازه‌ی اعلان",
+                HealthItem.Key.Notifications, "اجازه‌ی اعلان",
                 "تا پینگ‌ها، پیام‌ها و اعلان همیشگی پینگلی نمایش داده بشن.",
                 notificationsAllowed(context), essential = true,
             ),
         )
         add(
             HealthItem(
-                HealthItem.Key.Battery, "🔋", "بدون محدودیت باتری",
+                HealthItem.Key.Battery, "بدون محدودیت باتری",
                 "مهم‌ترین مورد! تا اندروید پینگلی رو برای صرفه‌جویی در باتری نخوابونه.",
                 batteryUnrestricted(context), essential = true,
             ),
@@ -68,7 +67,7 @@ object BackgroundHealth {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             add(
                 HealthItem(
-                    HealthItem.Key.FullScreen, "🖼️", "نمایش تمام‌صفحه",
+                    HealthItem.Key.FullScreen, "نمایش تمام‌صفحه",
                     "تا عکس‌ها و پیام‌های عاشقانه حتی روی صفحه‌ی قفل باز بشن.",
                     fullScreenAllowed(context), essential = true,
                 ),
@@ -76,7 +75,7 @@ object BackgroundHealth {
         }
         add(
             HealthItem(
-                HealthItem.Key.Overlay, "✨", "نمایش روی برنامه‌های دیگه",
+                HealthItem.Key.Overlay, "نمایش روی برنامه‌های دیگه",
                 "تا وقتی با یه برنامه‌ی دیگه کار می‌کنی هم پیام عاشقانه فوراً تمام‌صفحه باز بشه.",
                 overlayAllowed(context), essential = false,
             ),
@@ -84,7 +83,7 @@ object BackgroundHealth {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             add(
                 HealthItem(
-                    HealthItem.Key.ExactAlarms, "⏰", "هشدار دقیق",
+                    HealthItem.Key.ExactAlarms, "هشدار دقیق",
                     "به نگهبان پینگلی اجازه می‌ده اگه سرویس متوقف شد، سریع‌تر دوباره روشنش کنه.",
                     exactAlarmsAllowed(context), essential = false,
                 ),
@@ -93,7 +92,7 @@ object BackgroundHealth {
         if (hasAutostartManager) {
             add(
                 HealthItem(
-                    HealthItem.Key.Autostart, "🚀", "اجرای خودکار (${Build.MANUFACTURER})",
+                    HealthItem.Key.Autostart, "اجرای خودکار (${Build.MANUFACTURER})",
                     "گوشی‌های این برند یه مدیریت‌کننده‌ی اختصاصی دارن؛ پینگلی رو اونجا «مجاز» یا «بدون محدودیت» کن.",
                     autostartConfirmed, essential = false,
                 ),
@@ -101,7 +100,7 @@ object BackgroundHealth {
         }
         add(
             HealthItem(
-                HealthItem.Key.Service, "💓", "سرویس پس‌زمینه",
+                HealthItem.Key.Service, "سرویس پس‌زمینه",
                 if (serviceShouldRun) "پینگلی باید همیشه روشن باشه تا پارتنرت بهت برسه." else "در حالت مکث خاموشه؛ با «ادامه» دوباره روشن می‌شه.",
                 !serviceShouldRun || PinglyService.running, essential = true,
             ),

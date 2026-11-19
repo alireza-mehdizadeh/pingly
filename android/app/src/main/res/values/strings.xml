@@ -15,7 +15,7 @@
     <string name="channel_health_desc">اگه پینگلی نتونه تو پس‌زمینه کار کنه، اینجا خبرت می‌کنیم.</string>
 
     <!-- Persistent service notification -->
-    <string name="service_title_ready">پینگلی روشنه 💗</string>
+    <string name="service_title_ready">پینگلی روشنه</string>
     <string name="service_text_partner">آماده‌ی دریافت پینگ از %1$s</string>
     <string name="service_text_waiting">منتظر اتصال به پارتنرت</string>
     <string name="service_text_connecting">در حال اتصال…</string>
