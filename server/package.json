@@ -1,0 +1,27 @@
+{
+  "name": "pingly-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pingly backend: phone OTP auth, partner pairing, realtime couple interactions",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/index.ts",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "node --disable-warning=ExperimentalWarning --test --test-concurrency=1 test/*.test.ts"
+  },
+  "dependencies": {
+    "@fastify/websocket": "^11.3.7",
+    "fastify": "^5.12.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/ws": "^8.18.2",
+    "typescript": "~5.9.3",
+    "ws": "^8.23.0"
+  }
+}
