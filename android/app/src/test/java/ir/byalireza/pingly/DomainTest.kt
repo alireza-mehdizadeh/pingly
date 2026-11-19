@@ -47,7 +47,8 @@ class DomainTest {
             locked = false, replyTo = null,
         )
         assertEquals("زینب یه پینگ فرستاد 💗", event(EventType.Ping, mine = false).summary("زینب"))
-        assertEquals("تو لرزش «بغل محکم» فرستاد 🤗", event(EventType.Vibrate, mine = true, mapOf("pattern" to "hug")).summary("زینب"))
+        assertEquals("لرزش «بغل محکم» فرستادی 🤗", event(EventType.Vibrate, mine = true, mapOf("pattern" to "hug")).summary("زینب"))
+        assertEquals("یه پینگ فرستادی 💗", event(EventType.Ping, mine = true).summary("زینب"))
         assertEquals("💌 «سلام»", event(EventType.Message, mine = false, payload = mapOf("text" to "سلام")).summary("زینب"))
         assertEquals(EventStatus.Answered, EventStatus.fromWire("answered"))
         assertEquals(EventType.Question, EventType.fromWire("question"))

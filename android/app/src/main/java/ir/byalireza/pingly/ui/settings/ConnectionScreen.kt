@@ -89,7 +89,8 @@ fun ConnectionScreen(onBack: () -> Unit, vm: ConnectionViewModel = viewModel()) 
                     Spacer(Modifier.height(14.dp))
                     val since = Persian.toJalali(pair.createdAt)
                     Bullet("از ${since} به هم وصلید", "📅")
-                    Bullet(Persian.digits("${Persian.daysBetween(pair.createdAt, System.currentTimeMillis())} روز با پینگلی"), "💗")
+                    val days = Persian.daysBetween(pair.createdAt, System.currentTimeMillis())
+                    Bullet(if (days <= 0) "امروز اولین روزتون با پینگلیه" else Persian.digits("$days روزه که با پینگلی کنار همید"), "💗")
                     Bullet(if (partner.paused) "${couple.partnerName} الان پینگلی رو مکث کرده" else "پینگلی ${couple.partnerName} روشنه", if (partner.paused) "⏸" else "✅")
                 }
 

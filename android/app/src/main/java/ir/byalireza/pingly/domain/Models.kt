@@ -61,18 +61,20 @@ data class PinglyEvent(
     val answer: String? get() = payloadString("a")
     val mediaId: String? get() = metaString("mediaId")
 
-    /** One-line Persian summary for lists and notifications. */
+    /** One-line Persian summary for lists and notifications, conjugated for "you" vs. the partner. */
     fun summary(partnerName: String): String {
-        val who = if (mine) "تو" else partnerName
+        fun said(you: String, partner: String) = if (mine) you else "$partnerName $partner"
+        val pattern = VibrationPattern.fromId(metaString("pattern"))
+        val sound = PinglySound.fromId(metaString("sound"))
         return when (type) {
-            EventType.Ping -> "$who یه پینگ فرستاد 💗"
-            EventType.Vibrate -> "$who لرزش «${VibrationPattern.fromId(metaString("pattern")).title}» فرستاد ${VibrationPattern.fromId(metaString("pattern")).emoji}"
-            EventType.Sound -> "$who صدای «${PinglySound.fromId(metaString("sound")).title}» رو پخش کرد ${PinglySound.fromId(metaString("sound")).emoji}"
-            EventType.Voice -> "$who یه صدای ضبط‌شده پخش کرد 🎙️"
-            EventType.Image -> "$who یه عکس تمام‌صفحه فرستاد 🖼️"
-            EventType.Message -> if (locked) "$who یه پیام عاشقانه فرستاد 💌" else "💌 «${text.orEmpty()}»"
-            EventType.Question -> if (locked) "$who یه سؤال پرسید ❓" else "❓ ${question.orEmpty()}"
-            EventType.Answer -> if (locked) "$who جواب داد 💬" else "💬 «${answer.orEmpty()}»"
+            EventType.Ping -> said("یه پینگ فرستادی 💗", "یه پینگ فرستاد 💗")
+            EventType.Vibrate -> said("لرزش «${pattern.title}» فرستادی ${pattern.emoji}", "لرزش «${pattern.title}» فرستاد ${pattern.emoji}")
+            EventType.Sound -> said("صدای «${sound.title}» رو پخش کردی ${sound.emoji}", "صدای «${sound.title}» رو پخش کرد ${sound.emoji}")
+            EventType.Voice -> said("یه صدای ضبط‌شده پخش کردی 🎙️", "یه صدای ضبط‌شده پخش کرد 🎙️")
+            EventType.Image -> said("یه عکس تمام‌صفحه نشون دادی 🖼️", "یه عکس تمام‌صفحه فرستاد 🖼️")
+            EventType.Message -> if (locked) said("یه پیام عاشقانه فرستادی 💌", "یه پیام عاشقانه فرستاد 💌") else "💌 «${text.orEmpty()}»"
+            EventType.Question -> if (locked) said("یه سؤال پرسیدی ❓", "یه سؤال پرسید ❓") else "❓ ${question.orEmpty()}"
+            EventType.Answer -> if (locked) said("جواب دادی 💬", "جواب داد 💬") else "💬 «${answer.orEmpty()}»"
         }
     }
 }
