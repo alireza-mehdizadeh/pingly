@@ -50,9 +50,14 @@ object Persian {
         return if (d.length == 10 && d.startsWith("9")) "0$d" else null
     }
 
-    /** `09121234567` → `۰۹۱۲ ۱۲۳ ۴۵۶۷`. */
-    fun prettyPhone(local: String): String =
-        if (local.length == 11) digits("${local.take(4)} ${local.substring(4, 7)} ${local.takeLast(4)}") else digits(local)
+    /**
+     * `09121234567` → `۰۹۱۲ ۱۲۳ ۴۵۶۷`, wrapped in a left-to-right isolate so the digit groups
+     * keep their order inside right-to-left sentences.
+     */
+    fun prettyPhone(local: String): String {
+        val grouped = if (local.length == 11) "${local.take(4)} ${local.substring(4, 7)} ${local.takeLast(4)}" else local
+        return "\u2066${digits(grouped)}\u2069"
+    }
 
     data class JalaliDate(val year: Int, val month: Int, val day: Int) {
         val monthName: String get() = MONTHS[month - 1]

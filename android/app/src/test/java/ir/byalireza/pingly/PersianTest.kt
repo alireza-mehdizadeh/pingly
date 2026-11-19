@@ -22,7 +22,7 @@ class PersianTest {
 
     @Test
     fun prettyPhoneGroupsDigits() {
-        assertEquals("۰۹۱۲ ۱۲۳ ۴۵۶۷", Persian.prettyPhone("09121234567"))
+        assertEquals("\u2066۰۹۱۲ ۱۲۳ ۴۵۶۷\u2069", Persian.prettyPhone("09121234567"))
     }
 
     @Test
