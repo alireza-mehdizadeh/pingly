@@ -1,0 +1,31 @@
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Node (server)
+node_modules/
+server/data/
+server/.env
+*.log
+
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.kotlin/
+.externalNativeBuild/
+.cxx/
+
+# Release signing — never commit keys or their passwords
+android/keystore/
+android/keystore.properties
+*.jks
+*.keystore
+
+# Build outputs handed to the user live in dist/
+dist/
