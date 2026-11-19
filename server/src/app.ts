@@ -7,6 +7,7 @@ import { openDatabase, type Db } from './db.ts'
 import { ApiError, unauthorized } from './lib/errors.ts'
 import { createSmsSender, type SmsSender } from './lib/sms.ts'
 import type { Connection } from './realtime.ts'
+import { deleteAccount } from './services/account.ts'
 import { authenticate, logout, requestOtp, verifyOtp, type AuthInfo } from './services/auth.ts'
 import { acknowledge, expireStaleEvents, listEvents, markOpened, pendingFor, sendEvent } from './services/events.ts'
 import { deleteMedia, getMedia, listMedia, MEDIA_LIMITS, uploadMedia } from './services/media.ts'
@@ -115,6 +116,11 @@ export async function buildApp(options: BuildOptions): Promise<{ app: FastifyIns
     { preHandler: requireAuth, schema: { body: { type: 'object' } } },
     async (request) => ({ user: updateMe(ctx, me(request), request.body) }),
   )
+
+  app.delete('/v1/me', { preHandler: requireAuth }, async (request) => {
+    deleteAccount(ctx, me(request))
+    return { ok: true }
+  })
 
   app.post<{ Body: { paused: boolean } }>(
     '/v1/me/pause',

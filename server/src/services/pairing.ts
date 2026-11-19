@@ -137,7 +137,7 @@ export function unpair(ctx: Ctx, userId: string): void {
   ctx.hub.send(userId, { t: 'sync', reason: 'pair' })
 }
 
-function endPair(ctx: Ctx, pair: PairRow): void {
+export function endPair(ctx: Ctx, pair: PairRow): void {
   transaction(ctx.db, () => {
     ctx.db.prepare('UPDATE pairs SET ended_at = ? WHERE id = ?').run(ctx.now(), pair.id)
     ctx.db.prepare('DELETE FROM events WHERE pair_id = ?').run(pair.id)

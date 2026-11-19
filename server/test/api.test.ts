@@ -338,4 +338,26 @@ describe('couple flow', () => {
     assert.equal((await api('GET', '/v1/events', a.token)).json.error.code, 'not_paired')
     sa.close()
   })
+
+  test('deleting an account erases it and frees the partner', async () => {
+    const x = await login('09126666666')
+    const y = await login('09127777777')
+    await api('POST', '/v1/pair/invites', x.token, { phone: '09127777777' })
+    const invite = (await api('GET', '/v1/me', y.token)).json.invites.incoming[0]
+    await api('POST', `/v1/pair/invites/${invite.id}/accept`, y.token)
+    await api('POST', '/v1/events', y.token, { type: 'ping' })
+
+    const sy = await connect(y.token)
+    assert.equal((await api('DELETE', '/v1/me', x.token)).status, 200)
+    await sy.next((m) => m.t === 'sync' && m.reason === 'pair')
+    sy.close()
+
+    assert.equal((await api('GET', '/v1/me', x.token)).status, 401)
+    assert.equal((await api('GET', '/v1/me', y.token)).json.partner, null)
+    clock += 61_000
+    const again = await api('POST', '/v1/auth/otp/request', undefined, { phone: '09126666666' })
+    assert.equal(again.status, 200)
+    const code = sentCodes.get('989126666666')!
+    assert.equal((await api('POST', '/v1/auth/otp/verify', undefined, { phone: '09126666666', code })).json.isNewUser, true)
+  })
 })
