@@ -56,6 +56,11 @@ class ApiClient(
 
     suspend fun updateMe(patch: JsonObject): UserDto = call("PATCH", "/v1/me", patch, UserEnvelope.serializer()).user
 
+    /** Permanently deletes the account and everything shared with the partner. */
+    suspend fun deleteAccount() {
+        call("DELETE", "/v1/me", null, JsonObject.serializer())
+    }
+
     suspend fun setPaused(paused: Boolean): UserDto =
         call("POST", "/v1/me/pause", buildJsonObject { put("paused", paused) }, UserEnvelope.serializer()).user
 

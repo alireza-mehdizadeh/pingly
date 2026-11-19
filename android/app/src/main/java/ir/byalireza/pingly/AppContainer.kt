@@ -124,8 +124,12 @@ class AppContainer(private val context: Context) {
         }
     }
 
-    suspend fun logout() {
-        account.logout(callServer = true)
+    suspend fun logout() = signOut { account.logout(callServer = true) }
+
+    suspend fun deleteAccount() = signOut { account.deleteAccount() }
+
+    private suspend fun signOut(block: suspend () -> Unit) {
+        block()
         events.clear()
         media.clear()
         realtime.stop()

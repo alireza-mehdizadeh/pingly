@@ -74,6 +74,8 @@ class SettingsViewModel(app: Application) : BaseViewModel(app) {
     }
 
     fun logout(onDone: () -> Unit) = action { container.logout(); onDone() }
+
+    fun deleteAccount() = action { container.deleteAccount() }
 }
 
 @Composable
@@ -90,6 +92,7 @@ fun SettingsScreen(
     val busy by vm.busy.collectAsState()
     val toaster = LocalToaster.current
     var confirmLogout by rememberSaveable { mutableStateOf(false) }
+    var confirmDelete by rememberSaveable { mutableStateOf(false) }
     var editServer by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(vm) { vm.toasts.collect(toaster::show) }
     val allow = couple.me?.settings?.allow ?: AllowDto()
@@ -171,6 +174,7 @@ fun SettingsScreen(
                 PinglyCard(padding = 8) {
                     NavRow("🌐", "آدرس سرور (پیشرفته)", vm.serverUrl, onClick = { editServer = true })
                     NavRow("🚪", "خروج از حساب", "با خروج، اعلان‌ها و سرویس پس‌زمینه هم متوقف می‌شن", onClick = { confirmLogout = true }, danger = true)
+                    NavRow("🗑️", "حذف همیشگی حساب", "پروفایل، اتصال، تاریخچه، عکس‌ها و صداها پاک می‌شن", onClick = { confirmDelete = true }, danger = true)
                 }
 
                 Spacer(Modifier.height(20.dp))
@@ -197,6 +201,19 @@ fun SettingsScreen(
                 vm.logout {}
             },
             onDismiss = { confirmLogout = false },
+        )
+    }
+    if (confirmDelete) {
+        ConfirmDialog(
+            title = "حسابت برای همیشه پاک بشه؟ 🥺",
+            text = "پروفایلت، اتصال با ${couple.partnerName}، کل تاریخچه و همه‌ی عکس‌ها و صداهای مشترک از روی سرور پاک می‌شن و قابل برگشت نیستن. هر وقت بخوای می‌تونی دوباره با همین شماره ثبت‌نام کنی.",
+            confirm = "حذف همیشگی",
+            destructive = true,
+            onConfirm = {
+                confirmDelete = false
+                vm.deleteAccount()
+            },
+            onDismiss = { confirmDelete = false },
         )
     }
     if (editServer) {

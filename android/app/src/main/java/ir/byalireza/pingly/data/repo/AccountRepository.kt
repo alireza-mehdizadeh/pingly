@@ -177,6 +177,11 @@ class AccountRepository(
         clearLocal()
     }
 
+    suspend fun deleteAccount() {
+        api.deleteAccount()
+        clearLocal()
+    }
+
     fun clearLocal() {
         secure.clear()
         prefs.clearAccount()
