@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+  Source for the PNG exports in branding/exports. Render with headless Chrome:
+    chrome --headless=new --screenshot=out.png --window-size=W,H "file://…/brand-sheet.html#<view>"
+  Views: #icon (512×512), #logo (1200×420), #sheet (1600×1000), #feature (1024×500)
+-->
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>Pingly brand</title>
+<style>
+@font-face{font-family:"Vazirmatn RD";font-weight:400;src:url(../android/app/src/main/res/font/vazirmatn_regular.ttf)}
+@font-face{font-family:"Vazirmatn RD";font-weight:700;src:url(../android/app/src/main/res/font/vazirmatn_bold.ttf)}
+@font-face{font-family:"Vazirmatn RD";font-weight:900;src:url(../android/app/src/main/res/font/vazirmatn_black.ttf)}
+:root{--pink:#FF6F91;--pink2:#FF9BB3;--lilac:#9B8CFF;--lilac2:#C2B6FF;--peach:#FFB38A;--butter:#FFC24B;--mint:#7ED9C0;--ink:#3D2645;--cream:#FFF7F3;--blush:#FFE0EA}
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;font-family:"Vazirmatn RD",sans-serif;color:var(--ink)}
+.view{display:none}
+:target{display:flex}
+.wordmark{font-weight:900;background:linear-gradient(90deg,#FF5C86,#8B78F4);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.latin{font-weight:700;letter-spacing:.06em;color:#8C6F93}
+#icon{width:512px;height:512px}
+#logo{width:1200px;height:420px;align-items:center;justify-content:center;gap:36px;background:var(--cream)}
+#logo .wordmark{font-size:150px;padding-bottom:20px}
+#logo .latin{font-size:46px;margin-top:8px}
+#sheet{width:1600px;height:1000px;flex-direction:column;padding:64px;gap:40px;background:linear-gradient(135deg,#FFF7F3,#FFE6EE)}
+#sheet h1{margin:0;font-size:64px}
+.row{display:flex;gap:28px;align-items:center}
+.sw{width:170px;height:170px;border-radius:40px;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;font-size:22px;font-weight:700;box-shadow:0 12px 30px rgba(61,38,69,.12)}
+.sw small{font-weight:400;font-size:18px;opacity:.8;direction:ltr;text-align:right}
+.card{background:#fff;border-radius:48px;padding:40px;box-shadow:0 20px 50px rgba(61,38,69,.10)}
+#feature{width:1024px;height:500px;align-items:center;justify-content:space-between;padding:0 90px;background:linear-gradient(135deg,#FFE6EE,#EDE8FF)}
+#feature .wordmark{font-size:120px}
+#feature p{font-size:36px;margin:18px 0 0;font-weight:700}
+</style></head><body>
+
+<div id="icon" class="view"><img src="logo/pingly-app-icon.svg" width="512" height="512" alt=""></div>
+
+<div id="logo" class="view">
+  <img src="logo/pingly-mark.svg" width="300" height="300" alt="">
+  <div><div class="wordmark">پینگلی</div><div class="latin">PINGLY</div></div>
+</div>
+
+<div id="feature" class="view">
+  <div><div class="wordmark">پینگلی</div><p>یه پینگ کوچولو، یه دنیا دلتنگی 💗</p></div>
+  <img src="logo/pingly-mark.svg" width="380" height="380" alt="">
+</div>
+
+<div id="sheet" class="view">
+  <div class="row" style="justify-content:space-between">
+    <div><h1>هویت بصری پینگلی</h1><div style="font-size:28px;margin-top:8px">دو تا دل کوچولو که با هم یه قلب می‌سازن ✨</div></div>
+    <div class="row"><img src="logo/pingly-app-icon.svg" width="170" height="170" style="border-radius:40px;box-shadow:0 12px 30px rgba(61,38,69,.15)" alt=""><img src="logo/pingly-icon-monochrome.svg" width="150" height="150" style="opacity:.75" alt=""></div>
+  </div>
+  <div class="row">
+    <div class="sw" style="background:#FF6F91;color:#fff">صورتی پینگ<small>#FF6F91</small></div>
+    <div class="sw" style="background:#9B8CFF;color:#fff">یاسی<small>#9B8CFF</small></div>
+    <div class="sw" style="background:#FFB38A">هلویی<small>#FFB38A</small></div>
+    <div class="sw" style="background:#FFC24B">کره‌ای<small>#FFC24B</small></div>
+    <div class="sw" style="background:#7ED9C0">نعنایی<small>#7ED9C0</small></div>
+    <div class="sw" style="background:#3D2645;color:#fff">جوهر آلویی<small>#3D2645</small></div>
+    <div class="sw" style="background:#FFF7F3">کرم<small>#FFF7F3</small></div>
+  </div>
+  <div class="row card" style="justify-content:space-between">
+    <div class="row" style="gap:20px"><img src="logo/pingly-mark.svg" width="150" height="150" alt=""><div><div class="wordmark" style="font-size:96px">پینگلی</div><div class="latin" style="font-size:30px">PINGLY</div></div></div>
+    <div style="font-size:26px;line-height:1.9;max-width:640px">قلم: <b>وزیرمتن نقطه‌گرد</b> با اعداد فارسی<br>«پی» صورتی و «لی» یاسی، گونه به گونه؛ جرقه‌ی طلایی بالای سرشون همون <b>پینگ</b>ـه.</div>
+  </div>
+</div>
+</body></html>
