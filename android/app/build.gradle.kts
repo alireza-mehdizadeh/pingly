@@ -55,6 +55,16 @@ android {
             // Debug builds talk to a server on the development machine (emulator host alias).
             buildConfigField("String", "DEFAULT_SERVER_URL", "\"http://10.0.2.2:3000\"")
         }
+        // QA build: exactly the minified release code, but debug-signed and talking to a local
+        // server, so R8 output can be exercised end to end before shipping.
+        create("staging") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-staging"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            buildConfigField("String", "DEFAULT_SERVER_URL", "\"http://10.0.2.2:3000\"")
+        }
     }
 
     compileOptions {
