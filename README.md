@@ -10,9 +10,10 @@ closed and the screen is locked.
 
 | | | | |
 |---|---|---|---|
-| ![](docs/screenshots/onboarding.webp) | ![](docs/screenshots/dashboard.webp) | ![](docs/screenshots/fullscreen-love-note.webp) | ![](docs/screenshots/question-on-lock-screen.webp) |
-| ![](docs/screenshots/fullscreen-photo.webp) | ![](docs/screenshots/love-note-composer.webp) | ![](docs/screenshots/voice-notes.webp) | ![](docs/screenshots/history.webp) |
-| ![](docs/screenshots/background-reliability.webp) | ![](docs/screenshots/connection-safety-code.webp) | | |
+| ![](docs/screenshots/onboarding.webp) | ![](docs/screenshots/login-otp.webp) | ![](docs/screenshots/dashboard.webp) | ![](docs/screenshots/history.webp) |
+| ![](docs/screenshots/vibration.webp) | ![](docs/screenshots/love-note-composer.webp) | ![](docs/screenshots/question-composer.webp) | ![](docs/screenshots/voice-notes.webp) |
+| ![](docs/screenshots/fullscreen-love-note.webp) | ![](docs/screenshots/question-answered.webp) | ![](docs/screenshots/settings.webp) | ![](docs/screenshots/connection.webp) |
+| ![](docs/screenshots/background-reliability.webp) | ![](docs/screenshots/pause-dialog.webp) | | |
 
 ## Features
 
@@ -21,7 +22,11 @@ closed and the screen is locked.
 - **Remote actions**: ping 💗, six vibration patterns, eight original sounds, personal voice
   notes, full-screen photos, full-screen love notes (5 styles), multiple-choice or free-answer
   questions — with delivered / seen / answered receipts
-- **Couple dashboard**: avatars, days-together counter, live presence, recent activity
+- **Couple dashboard** with a bottom tab bar (Home, History, Gallery, Settings) and a raised
+  heart button that pings your partner from anywhere; days-together counter, live presence,
+  today's sent/received stats, recent activity
+- **Icon-led design system**: line icons for every action, navy primary buttons, pastel accent
+  tiles, filled inputs, filter chips, monogram avatars — consistent across every screen
 - **Shared gallery and voice library**, **history** with Jalali dates
 - **Privacy controls**: the receiver chooses which actions the partner may trigger (enforced
   by the server), end-to-end encryption with a verifiable safety code, unpair (erases shared
