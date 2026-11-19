@@ -117,7 +117,7 @@ fun MessageScreen(onBack: () -> Unit, vm: ComposeViewModel = viewModel()) {
                         .animateContentSize(),
                     contentAlignment = Alignment.Center,
                 ) {
-                    FloatingHearts(count = 10, colors = listOf(Color.White), maxAlpha = 0.35f)
+                    FloatingHearts(Modifier.matchParentSize(), count = 10, colors = listOf(Color.White), maxAlpha = 0.35f)
                     Text(
                         text.ifBlank { "پیامت اینجا دیده می‌شه…" },
                         style = MaterialTheme.typography.headlineSmall,
@@ -135,7 +135,7 @@ fun MessageScreen(onBack: () -> Unit, vm: ComposeViewModel = viewModel()) {
                                     .size(48.dp)
                                     .clip(CircleShape)
                                     .background(Brush.linearGradient(s.colors))
-                                    .border(if (s == style) 3.dp else 0.dp, PinglyColors.Ink, CircleShape),
+                                    .then(if (s == style) Modifier.border(3.dp, PinglyColors.Ink, CircleShape) else Modifier),
                             )
                             Text(s.title, style = MaterialTheme.typography.labelSmall, color = PinglyColors.InkSoft)
                         }

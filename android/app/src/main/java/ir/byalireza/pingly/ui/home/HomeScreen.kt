@@ -169,9 +169,9 @@ fun HomeScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp),
         ) {
             Spacer(Modifier.height(10.dp))
@@ -257,7 +257,7 @@ private fun CoupleCard(couple: CoupleState) {
             .clip(RoundedCornerShape(34.dp))
             .background(Brush.linearGradient(listOf(Color(0xFFFF8FAB), PinglyColors.Pink, PinglyColors.Lilac))),
     ) {
-        FloatingHearts(count = 9, colors = listOf(Color.White), maxAlpha = 0.25f)
+        FloatingHearts(Modifier.matchParentSize(), count = 9, colors = listOf(Color.White), maxAlpha = 0.25f)
         Column(Modifier.padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
                 AvatarBubble(couple.me?.avatar, size = 70.dp, ring = Color.White)

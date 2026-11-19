@@ -11,6 +11,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +35,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -202,7 +202,6 @@ private fun WaitingForLy() {
                 path, PinglyColors.Lilac.copy(alpha = 0.7f),
                 style = Stroke(width = 2.5f * s, pathEffect = PathEffect.dashPathEffect(floatArrayOf(5 * s, 4 * s), dash)),
             )
-            drawCircle(PinglyColors.Lilac.copy(alpha = 0.6f), radius = 3 * s, center = Offset(69 * s, 47 * s))
         }
         Image(
             painterResource(R.drawable.ic_mascot_pi), null,
@@ -211,7 +210,8 @@ private fun WaitingForLy() {
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.45f, 0.85f)
             },
         )
-        Text("?", style = MaterialTheme.typography.headlineMedium, color = PinglyColors.Lilac, modifier = Modifier.padding(start = 70.dp, bottom = 30.dp))
+        // Absolute offset: the dotted outline is always on the right, whatever the layout direction.
+        Text("?", style = MaterialTheme.typography.headlineLarge, color = PinglyColors.Lilac, modifier = Modifier.absoluteOffset(x = 38.dp, y = (-24).dp))
     }
 }
 

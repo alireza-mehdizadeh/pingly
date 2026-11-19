@@ -117,7 +117,7 @@ private fun AvatarGrid(selected: String, onSelect: (String) -> Unit) {
                             .scale(scale)
                             .clip(CircleShape)
                             .background(a.background)
-                            .border(if (isSelected) 3.dp else 0.dp, PinglyColors.Pink, CircleShape)
+                            .then(if (isSelected) Modifier.border(3.dp, PinglyColors.Pink, CircleShape) else Modifier)
                             .bouncyClick { onSelect(a.id) },
                         contentAlignment = Alignment.Center,
                     ) {
