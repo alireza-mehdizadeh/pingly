@@ -8,50 +8,57 @@ import android.media.MediaRecorder
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.automirrored.rounded.Label
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.Stop
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
@@ -62,18 +69,22 @@ import ir.byalireza.pingly.data.repo.MediaItem
 import ir.byalireza.pingly.data.repo.MediaKind
 import ir.byalireza.pingly.domain.EventType
 import ir.byalireza.pingly.ui.BaseViewModel
+import ir.byalireza.pingly.ui.components.CircleIconButton
 import ir.byalireza.pingly.ui.components.ConfirmDialog
-import ir.byalireza.pingly.ui.components.EmojiBadge
 import ir.byalireza.pingly.ui.components.EmptyState
+import ir.byalireza.pingly.ui.components.InfoLine
+import ir.byalireza.pingly.ui.components.LinkButton
 import ir.byalireza.pingly.ui.components.LocalToaster
-import ir.byalireza.pingly.ui.components.PillButton
-import ir.byalireza.pingly.ui.components.PinglyBackground
 import ir.byalireza.pingly.ui.components.PinglyCard
+import ir.byalireza.pingly.ui.components.PinglyScreen
 import ir.byalireza.pingly.ui.components.PinglyTextField
 import ir.byalireza.pingly.ui.components.PrimaryButton
-import ir.byalireza.pingly.ui.components.SectionTitle
-import ir.byalireza.pingly.ui.components.TopBar
+import ir.byalireza.pingly.ui.components.RowDivider
+import ir.byalireza.pingly.ui.components.SectionHeader
+import ir.byalireza.pingly.ui.components.StatusChip
+import ir.byalireza.pingly.ui.components.ToastKind
 import ir.byalireza.pingly.ui.components.bouncyClick
+import ir.byalireza.pingly.ui.components.visual
 import ir.byalireza.pingly.ui.theme.PinglyColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -167,17 +178,16 @@ class VoiceViewModel(app: Application) : BaseViewModel(app) {
         try {
             recorder.start(onLimitReached = ::stopRecording)
         } catch (e: Exception) {
-            toast("میکروفون در دسترس نیست 🎙️")
+            toast("میکروفون در دسترس نیست", ToastKind.Error)
             return
         }
-        val started = System.currentTimeMillis()
-        _record.value = RecordState.Recording(started, emptyList())
+        _record.value = RecordState.Recording(System.currentTimeMillis(), emptyList())
         meter = viewModelScope.launch {
             while (true) {
                 delay(90)
-                val level = (recorder.amplitude() / 22_000f).coerceIn(0.05f, 1f)
+                val level = (recorder.amplitude() / 22_000f).coerceIn(0.06f, 1f)
                 val current = _record.value as? RecordState.Recording ?: break
-                _record.value = current.copy(levels = (current.levels + level).takeLast(36))
+                _record.value = current.copy(levels = (current.levels + level).takeLast(40))
             }
         }
     }
@@ -186,7 +196,7 @@ class VoiceViewModel(app: Application) : BaseViewModel(app) {
         meter?.cancel()
         val result = recorder.stop()
         _record.value = if (result != null) RecordState.Recorded(result.first, result.second) else {
-            toast("صدا خیلی کوتاه بود؛ دکمه رو نگه دار و یه جمله بگو 🙂")
+            toast("صدا خیلی کوتاه بود؛ یه جمله‌ی کامل بگو")
             RecordState.Idle
         }
     }
@@ -205,7 +215,7 @@ class VoiceViewModel(app: Application) : BaseViewModel(app) {
 
     fun save(title: String) {
         val rec = record.value as? RecordState.Recorded ?: return
-        action(success = "صدات با رمزنگاری سرتاسری ذخیره شد 🔐") {
+        action(success = "صدات با رمزنگاری سرتاسری ذخیره شد") {
             container.media.upload(MediaKind.Voice, rec.file.readBytes(), title.ifBlank { "صدای من" }, rec.durationMs)
             rec.file.delete()
             _record.value = RecordState.Idle
@@ -221,12 +231,12 @@ class VoiceViewModel(app: Application) : BaseViewModel(app) {
             try {
                 container.sound.playFile(container.media.file(item.id), item.id, fromPartner = false)
             } catch (e: Exception) {
-                toast(e.toPersianMessage())
+                toast(e.toPersianMessage(), ToastKind.Error)
             }
         }
     }
 
-    fun sendToPartner(item: MediaItem) = action(success = "صدات داره روی گوشیش پخش می‌شه 🎧") {
+    fun sendToPartner(item: MediaItem) = action(success = "صدات داره روی گوشیش پخش می‌شه") {
         container.events.send(EventType.Voice, meta = buildJsonObject { put("mediaId", item.id) })
     }
 
@@ -252,7 +262,7 @@ fun VoiceScreen(onBack: () -> Unit, vm: VoiceViewModel = viewModel()) {
     LaunchedEffect(vm) { vm.toasts.collect(toaster::show) }
 
     val micPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) vm.startRecording() else toaster.show("برای ضبط صدا، اجازه‌ی میکروفون لازمه 🎙️")
+        if (granted) vm.startRecording() else toaster.error("برای ضبط صدا، اجازه‌ی میکروفون لازمه")
     }
     fun record() {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) vm.startRecording()
@@ -260,54 +270,60 @@ fun VoiceScreen(onBack: () -> Unit, vm: VoiceViewModel = viewModel()) {
     }
     DisposableEffect(Unit) { onDispose { if (vm.record.value is RecordState.Recording) vm.stopRecording() } }
 
-    PinglyBackground {
-        Column(Modifier.fillMaxSize().imePadding().navigationBarsPadding()) {
-            TopBar("صدای من 🎙️", onBack = onBack, subtitle = "صدات رو ضبط کن تا هر وقت خواستی روی گوشی ${couple.partnerName} پخش بشه")
-            Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp)) {
-                PinglyCard {
-                    AnimatedContent(record::class, label = "rec") { _ ->
-                        when (val r = record) {
-                            RecordState.Idle -> Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                RecordButton(recording = false, onClick = ::record)
-                                Spacer(Modifier.height(10.dp))
-                                Text("بزن و حرفت رو بزن (تا ۳۰ ثانیه)", style = MaterialTheme.typography.bodyMedium, color = PinglyColors.InkSoft)
-                            }
-                            is RecordState.Recording -> Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                                Waveform(r.levels)
-                                Spacer(Modifier.height(10.dp))
-                                RecordingTimer(r.startedAt)
-                                Spacer(Modifier.height(10.dp))
-                                RecordButton(recording = true, onClick = vm::stopRecording)
-                                Spacer(Modifier.height(6.dp))
-                                Text("برای تموم کردن دوباره بزن", style = MaterialTheme.typography.bodySmall, color = PinglyColors.InkSoft)
-                            }
-                            is RecordState.Recorded -> Column(Modifier.fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    EmojiBadge("🎧", background = PinglyColors.LilacMist)
-                                    Spacer(Modifier.width(12.dp))
-                                    Text(
-                                        "صدای تازه · ${Persian.duration(r.durationMs)}",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = PinglyColors.Ink,
-                                        modifier = Modifier.weight(1f),
-                                    )
-                                    PillButton(if (playing == "draft") "⏹" else "▶ گوش بده", onClick = vm::previewRecording, filled = false, color = PinglyColors.Lilac)
-                                }
-                                Spacer(Modifier.height(12.dp))
-                                PinglyTextField(title, { title = it }, label = "اسم این صدا", placeholder = "مثلاً: صبح بخیر عشقم", maxLength = 40)
-                                Spacer(Modifier.height(12.dp))
-                                PrimaryButton("ذخیره 💾", onClick = { vm.save(title); title = "" }, loading = busy)
-                                Spacer(Modifier.height(6.dp))
-                                PillButton("دور بنداز", onClick = vm::discard, filled = false, color = PinglyColors.InkSoft, modifier = Modifier.align(Alignment.CenterHorizontally))
-                            }
-                        }
+    PinglyScreen(title = "صدای من", subtitle = "برای پخش روی گوشی ${couple.partnerName}", onBack = onBack) {
+        Spacer(Modifier.height(8.dp))
+        PinglyCard(padding = 20.dp) {
+            when (val r = record) {
+                RecordState.Idle -> Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    RecordButton(recording = false, onClick = ::record)
+                    Spacer(Modifier.height(14.dp))
+                    Text("ضبط صدای جدید", style = MaterialTheme.typography.titleMedium, color = PinglyColors.Ink)
+                    Text("بزن و حرفت رو بگو؛ تا ۳۰ ثانیه", style = MaterialTheme.typography.bodySmall, color = PinglyColors.InkSoft)
+                }
+                is RecordState.Recording -> Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Waveform(r.levels)
+                    Spacer(Modifier.height(14.dp))
+                    RecordingTimer(r.startedAt)
+                    Spacer(Modifier.height(14.dp))
+                    RecordButton(recording = true, onClick = vm::stopRecording)
+                    Spacer(Modifier.height(8.dp))
+                    Text("برای تموم کردن دوباره بزن", style = MaterialTheme.typography.bodySmall, color = PinglyColors.InkSoft)
+                }
+                is RecordState.Recorded -> Column(Modifier.fillMaxWidth()) {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(PinglyColors.SurfaceMuted).padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircleIconButton(
+                            if (playing == "draft") Icons.Rounded.Pause else Icons.Rounded.PlayArrow, "پخش",
+                            vm::previewRecording, size = 42.dp, background = PinglyColors.Ink, tint = Color.White, bordered = false,
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text("صدای تازه", style = MaterialTheme.typography.titleSmall, color = PinglyColors.Ink, modifier = Modifier.weight(1f))
+                        StatusChip(Persian.duration(r.durationMs), color = PinglyColors.Sky, background = PinglyColors.SkyTint)
                     }
+                    Spacer(Modifier.height(14.dp))
+                    PinglyTextField(title, { title = it }, placeholder = "مثلاً: صبح بخیر عشقم", label = "اسم این صدا", icon = Icons.AutoMirrored.Rounded.Label, maxLength = 40)
+                    Spacer(Modifier.height(14.dp))
+                    PrimaryButton("ذخیره", onClick = { vm.save(title); title = "" }, icon = Icons.Rounded.Save, loading = busy)
+                    LinkButton("دور بنداز", onClick = vm::discard, color = PinglyColors.Danger, icon = Icons.Rounded.DeleteOutline, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
-                SectionTitle("صداهای ذخیره‌شده")
-                if (voices.isEmpty()) {
-                    EmptyState("هنوز صدایی نداری", "اولین صدات رو ضبط کن؛ مثلاً یه «دلم برات تنگ شده» با صدای خودت 🥰", Modifier.fillMaxWidth().padding(vertical = 16.dp))
-                }
-                voices.forEach { item ->
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        InfoLine(Icons.Rounded.Lock, "صداها روی گوشی تو رمز می‌شن و فقط گوشی شما دو نفر می‌تونه بازشون کنه.")
+        SectionHeader("صداهای ذخیره‌شده")
+        if (voices.isEmpty()) {
+            PinglyCard {
+                EmptyState(
+                    Icons.Rounded.Mic, "هنوز صدایی نداری", "اولین صدات رو ضبط کن؛ مثلاً یه «دلم برات تنگ شده» با صدای خودت.",
+                    tint = PinglyColors.Sky, background = PinglyColors.SkyTint,
+                )
+            }
+        } else {
+            PinglyCard(padding = 6.dp) {
+                voices.forEachIndexed { index, item ->
+                    if (index > 0) RowDivider()
                     VoiceRow(
                         item = item,
                         partnerName = couple.partnerName,
@@ -317,18 +333,17 @@ fun VoiceScreen(onBack: () -> Unit, vm: VoiceViewModel = viewModel()) {
                         onSend = { vm.sendToPartner(item) },
                         onDelete = { deleting = item.id },
                     )
-                    Spacer(Modifier.height(10.dp))
                 }
-                Spacer(Modifier.height(16.dp))
             }
         }
     }
 
     deleting?.let { id ->
         ConfirmDialog(
+            icon = Icons.Rounded.DeleteOutline,
             title = "این صدا پاک بشه؟",
             text = "از روی سرور و گوشی هر دوتون پاک می‌شه.",
-            confirm = "پاکش کن",
+            confirm = "پاک کن",
             destructive = true,
             onConfirm = {
                 voices.firstOrNull { it.id == id }?.let(vm::delete)
@@ -342,47 +357,58 @@ fun VoiceScreen(onBack: () -> Unit, vm: VoiceViewModel = viewModel()) {
 @Composable
 private fun RecordButton(recording: Boolean, onClick: () -> Unit) {
     val pulse = rememberInfiniteTransition(label = "rec")
-    val scale by pulse.animateFloat(1f, if (recording) 1.12f else 1.04f, infiniteRepeatable(tween(600), RepeatMode.Reverse), label = "s")
-    Surface(
-        modifier = Modifier.size(96.dp).graphicsLayer { scaleX = scale; scaleY = scale }.bouncyClick(onClick = onClick),
-        shape = CircleShape,
-        color = if (recording) PinglyColors.Danger else PinglyColors.Pink,
-        shadowElevation = 10.dp,
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(if (recording) "⏹" else "🎙️", style = MaterialTheme.typography.headlineLarge, color = Color.White)
+    val ring by pulse.animateFloat(1f, if (recording) 1.25f else 1.1f, infiniteRepeatable(tween(800), RepeatMode.Reverse), label = "ring")
+    Box(Modifier.size(120.dp), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier
+                .size(96.dp)
+                .graphicsLayer { scaleX = ring; scaleY = ring }
+                .clip(CircleShape)
+                .background((if (recording) PinglyColors.Danger else PinglyColors.Sky).copy(alpha = 0.15f)),
+        )
+        Box(
+            Modifier
+                .size(84.dp)
+                .clip(CircleShape)
+                .background(if (recording) PinglyColors.Danger else PinglyColors.Ink)
+                .bouncyClick(onClick = onClick),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(if (recording) Icons.Rounded.Stop else Icons.Rounded.Mic, contentDescription = if (recording) "توقف" else "ضبط", tint = Color.White, modifier = Modifier.size(36.dp))
         }
     }
 }
 
 @Composable
 private fun RecordingTimer(startedAt: Long) {
-    var now by androidx.compose.runtime.remember { mutableStateOf(System.currentTimeMillis()) }
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(startedAt) {
         while (true) {
             now = System.currentTimeMillis()
             delay(200)
         }
     }
-    Text(
-        "${Persian.duration(now - startedAt)} / ${Persian.duration(VoiceRecorder.MAX_MS.toLong())}",
-        style = MaterialTheme.typography.titleMedium,
-        color = PinglyColors.Danger,
-        textAlign = TextAlign.Center,
-    )
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Box(Modifier.size(8.dp).clip(CircleShape).background(PinglyColors.Danger))
+        Text(
+            "${Persian.duration(now - startedAt)} / ${Persian.duration(VoiceRecorder.MAX_MS.toLong())}",
+            style = MaterialTheme.typography.titleMedium,
+            color = PinglyColors.Ink,
+        )
+    }
 }
 
 @Composable
 private fun Waveform(levels: List<Float>) {
     Canvas(Modifier.fillMaxWidth().height(56.dp)) {
-        val bars = 36
-        val gap = 4.dp.toPx()
+        val bars = 40
+        val gap = 3.dp.toPx()
         val w = (size.width - gap * (bars - 1)) / bars
         for (i in 0 until bars) {
-            val level = levels.getOrNull(i - (bars - levels.size)) ?: 0.05f
+            val level = levels.getOrNull(i - (bars - levels.size)) ?: 0.06f
             val h = size.height * level
             drawRoundRect(
-                if (i % 2 == 0) PinglyColors.Pink else PinglyColors.Lilac,
+                if (level > 0.06f) PinglyColors.Sky else PinglyColors.Border,
                 topLeft = Offset(i * (w + gap), (size.height - h) / 2),
                 size = Size(w, h),
                 cornerRadius = CornerRadius(w / 2),
@@ -401,40 +427,29 @@ private fun VoiceRow(
     onSend: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Surface(shape = RoundedCornerShape(24.dp), color = Color.White, shadowElevation = 3.dp) {
-        Column(Modifier.padding(14.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(Modifier.size(48.dp).bouncyClick(onClick = onPlay), shape = CircleShape, color = if (playing) PinglyColors.Lilac else PinglyColors.LilacMist) {
-                    Box(contentAlignment = Alignment.Center) { Text(if (playing) "⏸" else "▶", style = MaterialTheme.typography.titleLarge, color = if (playing) Color.White else PinglyColors.LilacDeep) }
-                }
-                Spacer(Modifier.width(12.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        when {
-                            item.locked -> "🔒 صدای رمزشده"
-                            else -> item.title ?: "صدای بی‌نام"
-                        },
-                        style = MaterialTheme.typography.titleSmall,
-                        color = PinglyColors.Ink,
-                    )
-                    Text(
-                        listOfNotNull(
-                            if (item.mine) "ضبط خودت" else "از طرف $partnerName",
-                            item.durationMs?.let { Persian.duration(it) },
-                            Persian.relative(item.createdAt),
-                        ).joinToString(" · "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = PinglyColors.InkSoft,
-                    )
-                }
-            }
-            if (item.mine && !item.locked) {
-                Spacer(Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    PillButton("🔊 پخش روی گوشی $partnerName", onClick = onSend, enabled = !busy)
-                    PillButton("🗑", onClick = onDelete, filled = false, color = PinglyColors.InkSoft)
-                }
-            }
+    val visual = EventType.Voice.visual
+    Row(Modifier.fillMaxWidth().padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        CircleIconButton(
+            if (playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow, "پخش", onPlay,
+            size = 46.dp, background = if (playing) visual.tint else visual.background, tint = if (playing) Color.White else visual.tint, bordered = false,
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(if (item.locked) "صدای رمزشده" else item.title ?: "صدای بی‌نام", style = MaterialTheme.typography.titleSmall, color = PinglyColors.Ink)
+            Text(
+                listOfNotNull(
+                    if (item.mine) "ضبط خودت" else "از $partnerName",
+                    item.durationMs?.let { Persian.duration(it) },
+                    Persian.relative(item.createdAt),
+                ).joinToString(" · "),
+                style = MaterialTheme.typography.bodySmall,
+                color = PinglyColors.InkSoft,
+            )
+        }
+        if (item.mine && !item.locked) {
+            CircleIconButton(Icons.Rounded.DeleteOutline, "حذف", onDelete, size = 38.dp, background = PinglyColors.SurfaceMuted, tint = PinglyColors.InkSoft, bordered = false)
+            Spacer(Modifier.width(8.dp))
+            CircleIconButton(Icons.AutoMirrored.Rounded.Send, "پخش روی گوشی $partnerName", onSend, size = 38.dp, background = PinglyColors.Ink, tint = Color.White, bordered = false, enabled = !busy)
         }
     }
 }
