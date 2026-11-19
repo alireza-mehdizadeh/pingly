@@ -11,38 +11,37 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 private val PinglyColorScheme = lightColorScheme(
-    primary = PinglyColors.Pink,
+    primary = PinglyColors.Ink,
     onPrimary = PinglyColors.Surface,
-    primaryContainer = PinglyColors.PinkMist,
+    primaryContainer = PinglyColors.LilacTint,
     onPrimaryContainer = PinglyColors.Ink,
-    secondary = PinglyColors.Lilac,
+    secondary = PinglyColors.Pink,
     onSecondary = PinglyColors.Surface,
-    secondaryContainer = PinglyColors.LilacMist,
+    secondaryContainer = PinglyColors.PinkTint,
     onSecondaryContainer = PinglyColors.Ink,
-    tertiary = PinglyColors.Peach,
-    tertiaryContainer = PinglyColors.PeachMist,
-    background = PinglyColors.Cream,
+    tertiary = PinglyColors.Lilac,
+    background = PinglyColors.Background,
     onBackground = PinglyColors.Ink,
     surface = PinglyColors.Surface,
     onSurface = PinglyColors.Ink,
-    surfaceVariant = PinglyColors.PinkMist,
+    surfaceVariant = PinglyColors.SurfaceMuted,
     onSurfaceVariant = PinglyColors.InkSoft,
     surfaceContainerLowest = PinglyColors.Surface,
     surfaceContainerLow = PinglyColors.Surface,
     surfaceContainer = PinglyColors.Surface,
     surfaceContainerHigh = PinglyColors.Surface,
-    surfaceContainerHighest = PinglyColors.PinkMist,
-    outline = PinglyColors.InkFaint,
-    outlineVariant = PinglyColors.PinkMist,
+    surfaceContainerHighest = PinglyColors.SurfaceMuted,
+    outline = PinglyColors.Border,
+    outlineVariant = PinglyColors.Border,
     error = PinglyColors.Danger,
 )
 
 val PinglyShapes = Shapes(
     extraSmall = RoundedCornerShape(10.dp),
-    small = RoundedCornerShape(16.dp),
-    medium = RoundedCornerShape(22.dp),
-    large = RoundedCornerShape(28.dp),
-    extraLarge = RoundedCornerShape(36.dp),
+    small = RoundedCornerShape(14.dp),
+    medium = RoundedCornerShape(20.dp),
+    large = RoundedCornerShape(26.dp),
+    extraLarge = RoundedCornerShape(32.dp),
 )
 
 /** Pingly is Persian-only, so the whole UI is right-to-left regardless of the device language. */

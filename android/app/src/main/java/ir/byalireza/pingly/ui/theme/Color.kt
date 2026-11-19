@@ -3,32 +3,44 @@ package ir.byalireza.pingly.ui.theme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-/** Pingly palette — see branding/README.md. */
+/**
+ * Pingly design tokens.
+ *
+ * Calm, airy neutrals carry the layout; deep navy is the action colour (buttons, active
+ * states); the brand pink→lilac lives in the hero areas; and five soft accent pairs
+ * (strong + tint) colour-code every kind of interaction.
+ */
 object PinglyColors {
-    val Pink = Color(0xFFFF6F91)
-    val PinkDeep = Color(0xFFFF5C86)
-    val PinkSoft = Color(0xFFFF9BB3)
-    val PinkMist = Color(0xFFFFE0EA)
-    val Lilac = Color(0xFF9B8CFF)
-    val LilacDeep = Color(0xFF8B78F4)
-    val LilacSoft = Color(0xFFC2B6FF)
-    val LilacMist = Color(0xFFEDE8FF)
-    val Peach = Color(0xFFFFB38A)
-    val PeachMist = Color(0xFFFFEDE2)
-    val Butter = Color(0xFFFFC24B)
-    val ButterMist = Color(0xFFFFF3D6)
-    val Mint = Color(0xFF7ED9C0)
-    val MintDeep = Color(0xFF3FB99A)
-    val MintMist = Color(0xFFE2F7F1)
-    val Ink = Color(0xFF3D2645)
-    val InkSoft = Color(0xFF7A6380)
-    val InkFaint = Color(0xFFB7A6BB)
-    val Cream = Color(0xFFFFF7F3)
+    // Neutrals
+    val Background = Color(0xFFF6F7FB)
     val Surface = Color(0xFFFFFFFF)
-    val Danger = Color(0xFFE5486B)
+    val SurfaceMuted = Color(0xFFF1F2F7)
+    val Border = Color(0xFFEAECF2)
+    val Ink = Color(0xFF15173D)
+    val InkSoft = Color(0xFF6B6F86)
+    val InkFaint = Color(0xFFA6AABB)
 
-    /** Pi → Ly: every brand gradient runs pink to lilac. */
-    val BrandGradient = Brush.linearGradient(listOf(PinkSoft, Pink, Lilac))
-    val ButtonGradient = Brush.horizontalGradient(listOf(Pink, LilacDeep))
-    val BackgroundGradient = Brush.verticalGradient(listOf(Cream, Color(0xFFFFEEF3), Color(0xFFF4EFFF)))
+    // Brand
+    val Pink = Color(0xFFFF5C8A)
+    val PinkSoft = Color(0xFFFF9BB3)
+    val PinkTint = Color(0xFFFFE9F0)
+    val Lilac = Color(0xFF7B6CF6)
+    val LilacSoft = Color(0xFFC2B6FF)
+    val LilacTint = Color(0xFFEFEDFF)
+
+    // Accents
+    val Sky = Color(0xFF2F9BDB)
+    val SkyTint = Color(0xFFE1F2FC)
+    val Peach = Color(0xFFF0883E)
+    val PeachTint = Color(0xFFFFEEDF)
+    val Mint = Color(0xFF22A876)
+    val MintTint = Color(0xFFDDF5EB)
+    val Butter = Color(0xFFD99A00)
+    val ButterTint = Color(0xFFFFF4D3)
+    val Danger = Color(0xFFEF4462)
+    val DangerTint = Color(0xFFFDE8EC)
+
+    /** Pi → Ly, the only place the full brand gradient appears. */
+    val HeroGradient = Brush.linearGradient(listOf(Color(0xFFFF7FA6), Color(0xFFC77DEB), Color(0xFF7B6CF6)))
+    val SoftGradient = Brush.verticalGradient(listOf(Color(0xFFFDEFF4), Color(0xFFF6F7FB)))
 }
