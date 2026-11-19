@@ -52,6 +52,8 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            // Debug builds talk to a server on the development machine (emulator host alias).
+            buildConfigField("String", "DEFAULT_SERVER_URL", "\"http://10.0.2.2:3000\"")
         }
     }
 
