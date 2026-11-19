@@ -8,6 +8,9 @@ npm install
 npm run dev        # http://localhost:3000, OTP codes are printed to the log
 npm test           # integration tests (real HTTP + WebSocket, in-memory DB)
 npm run typecheck
+
+# A virtual second phone (same API and end-to-end crypto as the app) for manual testing:
+PARTNER_STATE=/tmp/partner.json node scripts/virtual-partner.ts help
 ```
 
 ## What it does
@@ -15,7 +18,7 @@ npm run typecheck
 | Area | Endpoints |
 |------|-----------|
 | Phone OTP login (SMS.ir) | `POST /v1/auth/otp/request`, `POST /v1/auth/otp/verify`, `POST /v1/auth/logout` |
-| Profile, consent, Pause | `GET /v1/me`, `PATCH /v1/me`, `POST /v1/me/pause` |
+| Profile, consent, Pause | `GET /v1/me`, `PATCH /v1/me`, `POST /v1/me/pause`, `DELETE /v1/me` (delete account) |
 | Mutual pairing | `GET/POST /v1/pair/invites`, `POST /v1/pair/invites/:id/accept\|decline`, `DELETE /v1/pair/invites/:id`, `DELETE /v1/pair` |
 | Interactions | `POST /v1/events`, `GET /v1/events`, `POST /v1/events/:id/ack\|opened` |
 | Encrypted media | `POST /v1/media?kind=voice\|image` (octet-stream), `GET /v1/media`, `GET/DELETE /v1/media/:id` |
@@ -34,7 +37,8 @@ npm run typecheck
 - **End-to-end encryption**: message, question and answer text, captions, voice notes and
   photos are encrypted on the phone with a key derived from both partners' ECDH P-256 keys.
   The server stores and relays ciphertext only.
-- **Privacy**: unpairing deletes the couple's events and media.
+- **Privacy**: unpairing deletes the couple's events and media; deleting the account erases
+  everything tied to it.
 
 ### Realtime protocol
 
