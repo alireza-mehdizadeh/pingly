@@ -6,8 +6,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -19,10 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,9 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ir.byalireza.pingly.ui.theme.PinglyColors
 
@@ -43,131 +42,143 @@ import ir.byalireza.pingly.ui.theme.PinglyColors
 fun Modifier.bouncyClick(enabled: Boolean = true, onClick: () -> Unit): Modifier {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
-    val scale by animateFloatAsState(if (pressed) 0.95f else 1f, spring(dampingRatio = 0.5f, stiffness = 600f), label = "press")
+    val scale by animateFloatAsState(if (pressed) 0.96f else 1f, spring(dampingRatio = 0.55f, stiffness = 700f), label = "press")
     return this
         .scale(scale)
         .clickable(interactionSource = interaction, indication = null, enabled = enabled, onClick = onClick)
 }
 
+/** Full-width navy pill — the main action of a screen. */
 @Composable
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     enabled: Boolean = true,
     loading: Boolean = false,
-    brush: Brush = PinglyColors.ButtonGradient,
+    color: Color = PinglyColors.Ink,
+    contentColor: Color = Color.White,
 ) {
     val active = enabled && !loading
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(58.dp)
-            .alpha(if (enabled) 1f else 0.5f)
-            .shadow(if (active) 14.dp else 0.dp, RoundedCornerShape(29.dp), ambientColor = PinglyColors.Pink, spotColor = PinglyColors.Pink)
-            .clip(RoundedCornerShape(29.dp))
-            .background(brush)
+            .height(56.dp)
+            .clip(CircleShape)
+            .background(if (enabled) color else color.copy(alpha = 0.3f))
             .bouncyClick(enabled = active, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         AnimatedContent(loading, transitionSpec = { fadeIn() togetherWith fadeOut() }, label = "loading") { isLoading ->
             if (isLoading) {
-                CircularProgressIndicator(Modifier.size(24.dp), color = Color.White, strokeWidth = 2.5.dp)
+                CircularProgressIndicator(Modifier.size(22.dp), color = contentColor, strokeWidth = 2.5.dp)
             } else {
-                Text(text, style = MaterialTheme.typography.labelLarge, color = Color.White)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (icon != null) Icon(icon, contentDescription = null, tint = contentColor, modifier = Modifier.size(20.dp))
+                    Text(text, style = MaterialTheme.typography.labelLarge, color = contentColor)
+                }
             }
         }
     }
 }
 
+/** Soft full-width button on a tinted background — secondary actions. */
 @Composable
-fun SecondaryButton(
+fun TonalButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    tint: Color = PinglyColors.Ink,
+    background: Color = PinglyColors.SurfaceMuted,
     enabled: Boolean = true,
-    color: Color = PinglyColors.Pink,
+    height: Dp = 52.dp,
 ) {
-    Surface(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(54.dp)
-            .alpha(if (enabled) 1f else 0.5f)
+            .height(height)
+            .alpha(if (enabled) 1f else 0.45f)
+            .clip(CircleShape)
+            .background(background)
             .bouncyClick(enabled = enabled, onClick = onClick),
-        shape = RoundedCornerShape(27.dp),
-        color = Color.White,
-        border = BorderStroke(1.5.dp, color.copy(alpha = 0.35f)),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(text, style = MaterialTheme.typography.labelLarge, color = color)
-        }
+        if (icon != null) Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp).padding(end = 0.dp))
+        if (icon != null) Box(Modifier.size(8.dp))
+        Text(text, style = MaterialTheme.typography.labelLarge, color = tint)
     }
 }
 
-/** Compact pill button for inline actions on cards. */
+/** Compact pill for inline actions on cards and rows. */
 @Composable
-fun PillButton(
+fun SmallButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     filled: Boolean = true,
-    color: Color = PinglyColors.Pink,
+    color: Color = PinglyColors.Ink,
     enabled: Boolean = true,
 ) {
-    Surface(
-        modifier = modifier.alpha(if (enabled) 1f else 0.5f).bouncyClick(enabled = enabled, onClick = onClick),
-        shape = CircleShape,
-        color = if (filled) color else color.copy(alpha = 0.12f),
+    Row(
+        modifier = modifier
+            .height(38.dp)
+            .alpha(if (enabled) 1f else 0.45f)
+            .clip(CircleShape)
+            .background(if (filled) color else color.copy(alpha = 0.1f))
+            .bouncyClick(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            text,
-            modifier = Modifier.padding(horizontal = 18.dp, vertical = 9.dp),
-            style = MaterialTheme.typography.labelMedium,
-            color = if (filled) Color.White else color,
-        )
+        val content = if (filled) Color.White else color
+        if (icon != null) Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(17.dp))
+        Text(text, style = MaterialTheme.typography.labelMedium, color = content)
     }
 }
 
+/** Round icon button (back, more, play, send…). */
 @Composable
-fun TextLink(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, color: Color = PinglyColors.Lilac) {
-    Text(
-        text,
+fun CircleIconButton(
+    icon: ImageVector,
+    contentDescription: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = 44.dp,
+    background: Color = PinglyColors.Surface,
+    tint: Color = PinglyColors.Ink,
+    bordered: Boolean = true,
+    enabled: Boolean = true,
+) {
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .size(size)
+            .alpha(if (enabled) 1f else 0.4f)
+            .clip(CircleShape)
+            .background(background)
+            .then(if (bordered) Modifier.border(1.dp, PinglyColors.Border, CircleShape) else Modifier)
+            .bouncyClick(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription = contentDescription, tint = tint, modifier = Modifier.size(size * 0.48f))
+    }
+}
+
+/** Text-only action ("see all", "edit number"). */
+@Composable
+fun LinkButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, color: Color = PinglyColors.Lilac, icon: ImageVector? = null) {
+    Row(
+        modifier
+            .clip(CircleShape)
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 6.dp),
-        style = MaterialTheme.typography.labelLarge,
-        color = color,
-    )
-}
-
-/** Round icon button with an emoji, used in top bars. */
-@Composable
-fun EmojiIconButton(emoji: String, onClick: () -> Unit, modifier: Modifier = Modifier, badge: Boolean = false) {
-    Box(modifier) {
-        Surface(
-            modifier = Modifier.size(46.dp).bouncyClick(onClick = onClick),
-            shape = CircleShape,
-            color = Color.White,
-            shadowElevation = 3.dp,
-        ) {
-            Box(contentAlignment = Alignment.Center) { Text(emoji, style = MaterialTheme.typography.titleLarge) }
-        }
-        if (badge) {
-            Box(
-                Modifier
-                    .align(Alignment.TopEnd)
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(PinglyColors.Pink),
-            )
-        }
-    }
-}
-
-@Composable
-fun ButtonRow(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        content()
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(text, style = MaterialTheme.typography.labelMedium, color = color)
+        if (icon != null) Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
     }
 }

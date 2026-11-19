@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import ir.byalireza.pingly.AppContainer
 import ir.byalireza.pingly.PinglyApp
 import ir.byalireza.pingly.data.api.toPersianMessage
+import ir.byalireza.pingly.ui.components.ToastKind
+import ir.byalireza.pingly.ui.components.ToastMessage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,11 +24,11 @@ abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
     private val _busy = MutableStateFlow(false)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
 
-    private val _toasts = MutableSharedFlow<String>(extraBufferCapacity = 8)
-    val toasts: SharedFlow<String> = _toasts.asSharedFlow()
+    private val _toasts = MutableSharedFlow<ToastMessage>(extraBufferCapacity = 8)
+    val toasts: SharedFlow<ToastMessage> = _toasts.asSharedFlow()
 
-    protected fun toast(message: String) {
-        _toasts.tryEmit(message)
+    protected fun toast(message: String, kind: ToastKind = ToastKind.Info) {
+        _toasts.tryEmit(ToastMessage(message, kind))
     }
 
     /** Runs `block` with the busy flag set; failures become a friendly Persian toast. */
@@ -36,10 +38,10 @@ abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
             _busy.value = true
             try {
                 block()
-                success?.let(::toast)
+                success?.let { toast(it, ToastKind.Success) }
             } catch (e: Exception) {
                 onError(e)
-                toast(e.toPersianMessage())
+                toast(e.toPersianMessage(), ToastKind.Error)
             } finally {
                 _busy.value = false
             }

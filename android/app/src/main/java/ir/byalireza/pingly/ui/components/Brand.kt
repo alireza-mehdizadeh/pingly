@@ -12,12 +12,11 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,33 +25,44 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ir.byalireza.pingly.R
-import ir.byalireza.pingly.domain.Avatar
 import ir.byalireza.pingly.ui.theme.PinglyColors
 import kotlin.math.sin
 import kotlin.random.Random
 
-/** Soft pastel gradient with two blurred blobs — the backdrop of every screen. */
+/** The Pingly mark (Pi + Ly + ping burst). */
 @Composable
-fun PinglyBackground(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
-    Box(modifier.fillMaxSize().background(PinglyColors.BackgroundGradient)) {
-        Canvas(Modifier.fillMaxSize()) {
-            drawCircle(PinglyColors.PinkSoft.copy(alpha = 0.18f), radius = size.width * 0.55f, center = Offset(size.width * 1.0f, size.height * 0.05f))
-            drawCircle(PinglyColors.LilacSoft.copy(alpha = 0.20f), radius = size.width * 0.6f, center = Offset(0f, size.height * 0.85f))
-        }
-        content()
+fun BrandMark(size: Dp, modifier: Modifier = Modifier) {
+    Image(painterResource(R.drawable.ic_pingly_mark), contentDescription = "پینگلی", modifier = modifier.size(size))
+}
+
+/** Mark + «پینگلی» wordmark in the brand gradient. */
+@Composable
+fun Wordmark(modifier: Modifier = Modifier, markSize: Dp = 30.dp) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        BrandMark(markSize)
+        Text(
+            "پینگلی",
+            style = MaterialTheme.typography.titleLarge.copy(
+                brush = Brush.horizontalGradient(listOf(PinglyColors.Lilac, PinglyColors.Pink)),
+                fontWeight = FontWeight.Black,
+                fontSize = (markSize.value * 0.7f).sp,
+            ),
+        )
     }
 }
 
@@ -72,29 +82,29 @@ fun DrawScope.drawHeart(color: Color, topLeft: Offset, size: Size, alpha: Float 
 
 private class FloatingHeart(val x: Float, val size: Float, val speed: Float, val phase: Float, val sway: Float, val color: Color)
 
-/** Hearts drifting upward forever — used behind love notes, the dashboard and celebrations. */
+/** Hearts drifting upward — reserved for the full-screen love note, where it means something. */
 @Composable
 fun FloatingHearts(
     modifier: Modifier = Modifier,
     count: Int = 14,
-    colors: List<Color> = listOf(PinglyColors.Pink, PinglyColors.PinkSoft, PinglyColors.Lilac, PinglyColors.LilacSoft),
-    maxAlpha: Float = 0.55f,
+    colors: List<Color> = listOf(Color.White),
+    maxAlpha: Float = 0.4f,
 ) {
     val hearts = remember(count) {
         val random = Random(count * 31)
         List(count) {
             FloatingHeart(
                 x = random.nextFloat(),
-                size = 10f + random.nextFloat() * 22f,
+                size = 10f + random.nextFloat() * 20f,
                 speed = 0.5f + random.nextFloat() * 0.8f,
                 phase = random.nextFloat(),
-                sway = 6f + random.nextFloat() * 18f,
+                sway = 6f + random.nextFloat() * 16f,
                 color = colors[random.nextInt(colors.size)],
             )
         }
     }
     val transition = rememberInfiniteTransition(label = "hearts")
-    val time by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(9_000, easing = LinearEasing)), label = "t")
+    val time by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(10_000, easing = LinearEasing)), label = "t")
     Canvas(modifier.fillMaxSize()) {
         hearts.forEach { heart ->
             val progress = (time * heart.speed + heart.phase) % 1f
@@ -127,10 +137,9 @@ fun AnimatedMascot(modifier: Modifier = Modifier, size: Dp = 180.dp, playIntro: 
     }
     val breathe = rememberInfiniteTransition(label = "breathe")
     val scale by breathe.animateFloat(1f, 1.04f, infiniteRepeatable(tween(1400, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "s")
+    val offsetPx = with(LocalDensity.current) { (size * 0.35f).toPx() }
 
     Box(modifier.size(size).graphicsLayer { scaleX = scale; scaleY = scale }, contentAlignment = Alignment.Center) {
-        val offsetPx = with(androidx.compose.ui.platform.LocalDensity.current) { (size * 0.35f).toPx() }
-        // Pi and Ly are drawn on the same canvas as the logo, so they line up perfectly.
         Image(
             painterResource(R.drawable.ic_mascot_pi), null,
             Modifier.fillMaxSize().graphicsLayer {
@@ -153,51 +162,8 @@ fun AnimatedMascot(modifier: Modifier = Modifier, size: Dp = 180.dp, playIntro: 
                 scaleX = burst.value
                 scaleY = burst.value
                 alpha = burst.value.coerceIn(0f, 1f)
-                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.15f)
+                transformOrigin = TransformOrigin(0.5f, 0.15f)
             },
-        )
-    }
-}
-
-@Composable
-fun AvatarBubble(avatarId: String?, modifier: Modifier = Modifier, size: Dp = 64.dp, ring: Color? = null) {
-    val avatar = Avatar.fromId(avatarId)
-    Box(
-        modifier
-            .size(size)
-            .clip(CircleShape)
-            .background(ring ?: Color.White)
-            .then(if (ring != null) Modifier else Modifier),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            Modifier
-                .size(if (ring != null) size - 6.dp else size)
-                .clip(CircleShape)
-                .background(avatar.background),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(avatar.emoji, fontSize = (size.value * 0.5f).sp)
-        }
-    }
-}
-
-/** Small mascot with a caption — for empty lists and waiting states. */
-@Composable
-fun EmptyState(title: String, text: String, modifier: Modifier = Modifier, mascot: Int = R.drawable.ic_mascot_pi) {
-    androidx.compose.foundation.layout.Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        val bob = rememberInfiniteTransition(label = "bob")
-        val dy by bob.animateFloat(0f, -8f, infiniteRepeatable(tween(1200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "dy")
-        Image(painterResource(mascot), null, Modifier.size(110.dp).graphicsLayer { translationY = dy.dp.toPx() })
-        androidx.compose.foundation.layout.Spacer(Modifier.size(12.dp))
-        Text(title, style = MaterialTheme.typography.titleMedium, color = PinglyColors.Ink)
-        androidx.compose.foundation.layout.Spacer(Modifier.size(4.dp))
-        Text(
-            text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = PinglyColors.InkSoft,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            modifier = Modifier.alpha(0.9f),
         )
     }
 }
